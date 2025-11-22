@@ -35,6 +35,7 @@ function Login({ onLogin }) {
           <h2>Valdosta Medicine</h2>
         </div>
         <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#6b7280' }}>
+          Employee Management System
         </h3>
 
         {error && <div className="error">{error}</div>}
@@ -47,7 +48,6 @@ function Login({ onLogin }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="your.email@clinicops.com"
               placeholder="your.email@valdostamedicine.com"
             />
           </div>
@@ -78,8 +78,13 @@ function Login({ onLogin }) {
             <strong>Demo Credentials:</strong>
           </p>
           <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+<<<<<<< HEAD
             Admin: admin@clinicops.test / admintest123!!<br />
             User: user@clinicops.test / usertest123!!
+=======
+            Admin: admin@valdostamedicine.com / admin123<br />
+            Staff: sarah.johnson@valdostamedicine.com / password123
+>>>>>>> parent of b2ee0b4 (Update Login.jsx)
           </p>
         </div>
       </div>
