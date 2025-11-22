@@ -46,6 +46,17 @@ const startServer = async () => {
     await sequelize.sync({ force: false });
     console.log('Database synchronized');
 
+    // Auto-seed if database is empty (first run)
+    const { Employee } = require('./models');
+    const employeeCount = await Employee.count();
+
+    if (employeeCount === 0) {
+      console.log('Database is empty. Running initial seed...');
+      const seed = require('./seeders/seed-data');
+      await seed();
+      console.log('Initial seed complete');
+    }
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`API available at http://localhost:${PORT}`);
