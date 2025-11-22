@@ -6,7 +6,15 @@ function Layout({ user, onLogout }) {
   return (
     <div className="app">
       <nav className="navbar">
-        <h1>Valdosta Medicine</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <img
+            src="/logo.png"
+            alt="Clinic Logo"
+            style={{ height: '40px', width: 'auto' }}
+            onError={(e) => { e.target.style.display = 'none' }}
+          />
+          <h1>Valdosta Medicine</h1>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <div>
             <NavLink to="/">Dashboard</NavLink>

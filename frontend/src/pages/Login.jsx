@@ -25,7 +25,15 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Valdosta Medicine</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem' }}>
+          <img
+            src="/logo.png"
+            alt="Clinic Logo"
+            style={{ height: '80px', width: 'auto', marginBottom: '1rem' }}
+            onError={(e) => { e.target.style.display = 'none' }}
+          />
+          <h2>Valdosta Medicine</h2>
+        </div>
         <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#6b7280' }}>
           Task Management System
         </h3>
@@ -65,15 +73,15 @@ function Login({ onLogin }) {
           </button>
         </form>
 
-        {/* <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '4px' }}>
+        <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '4px' }}>
           <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
             <strong>Demo Credentials:</strong>
           </p>
           <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-            Admin: admin@clinicops.com / admin123<br />
-            Staff: sarah.johnson@clinicops.com / password123
+            Admin: admin@clinicops.test / admintest123!!<br />
+            User: user@clinicops.test / usertest123!!
           </p>
-        </div> */}
+        </div>
       </div>
     </div>
   )
