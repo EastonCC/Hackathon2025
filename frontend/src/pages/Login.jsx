@@ -35,7 +35,6 @@ function Login({ onLogin }) {
           <h2>Valdosta Medicine</h2>
         </div>
         <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#6b7280' }}>
-          Task Management System
         </h3>
 
         {error && <div className="error">{error}</div>}
@@ -49,6 +48,7 @@ function Login({ onLogin }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="your.email@clinicops.com"
+              placeholder="your.email@valdostamedicine.com"
             />
           </div>
 
