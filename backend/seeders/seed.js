@@ -11,11 +11,11 @@ const seed = async () => {
 
     console.log('\nDefault credentials:');
     console.log('  Admin:');
-    console.log('    Email: admin@valdostamedicine.com');
-    console.log('    Password: admin123');
+    console.log('    Email: admin@clinicops.test');
+    console.log('    Password: admintest123!!');
     console.log('  Staff:');
-    console.log('    Email: sarah.johnson@valdostamedicine.com');
-    console.log('    Password: password123');
+    console.log('    Email: sarah.johnson@clinicops.test');
+    console.log('    Password: usertest123!!');
 
     process.exit(0);
   } catch (error) {
