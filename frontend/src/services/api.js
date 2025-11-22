@@ -4,11 +4,6 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL ||
   (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
 
-console.log('API Configuration:')
-console.log('  Protocol:', window.location.protocol)
-console.log('  API_URL:', API_URL)
-console.log('  VITE_API_URL env:', import.meta.env.VITE_API_URL)
-
 const api = axios.create({
   baseURL: API_URL,
   headers: {

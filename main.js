@@ -45,14 +45,10 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
-      devTools: true
+      preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, 'assets/icon.png')
   });
-
-  // Open DevTools automatically for debugging
-  mainWindow.webContents.openDevTools();
 
   // Create application menu
   const template = [
@@ -93,36 +89,15 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
 
   // Load the frontend
-  // Always load from built files for desktop app
   const distPath = path.join(__dirname, 'frontend/dist/index.html');
   const fs = require('fs');
 
-  console.log('Checking for frontend at:', distPath);
-  console.log('Frontend exists:', fs.existsSync(distPath));
-
   if (fs.existsSync(distPath)) {
-    // Check if assets exist
-    const assetsPath = path.join(__dirname, 'frontend/dist/assets');
-    console.log('Assets path:', assetsPath);
-    console.log('Assets exist:', fs.existsSync(assetsPath));
-    if (fs.existsSync(assetsPath)) {
-      const assets = fs.readdirSync(assetsPath);
-      console.log('Asset files:', assets);
-    }
-
-    console.log('Loading from built frontend:', distPath);
-    mainWindow.loadFile(distPath).catch(err => {
-      console.error('Failed to load frontend:', err);
-    });
+    mainWindow.loadFile(distPath);
   } else {
     console.error('Frontend not built! Please run: cd frontend && npm run build');
     mainWindow.loadURL('data:text/html,<h1>Error: Frontend not built</h1><p>Please run: cd frontend && npm run build</p>');
   }
-
-  // Log any console messages from the renderer
-  mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
-    console.log(`[Renderer ${level}]:`, message);
-  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
