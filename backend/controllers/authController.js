@@ -3,10 +3,10 @@ const { Employee, Group } = require('../models');
 
 const register = async (req, res) => {
   try {
-    const { employeeId, name, email, password, address, salary, dateOfHire, dateOfBirth, department, role } = req.body;
+    const { name, email, password, address, salary, dateOfHire, dateOfBirth, department, role } = req.body;
 
-    if (!employeeId || !name || !email || !password) {
-      return res.status(400).json({ error: 'Employee ID, name, email, and password are required' });
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
     const existingEmployee = await Employee.findOne({
@@ -17,8 +17,32 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
+    // Auto-generate employee ID
+    const lastEmployee = await Employee.findOne({
+      order: [['employeeId', 'DESC']]
+    });
+
+    let newEmployeeId;
+    if (lastEmployee && lastEmployee.employeeId) {
+      // Extract number from last employee ID (e.g., "EMP003" -> 3)
+      const match = lastEmployee.employeeId.match(/(\d+)$/);
+      if (match) {
+        const lastNumber = parseInt(match[1], 10);
+        const nextNumber = lastNumber + 1;
+        // Pad with zeros to maintain consistent length
+        const paddedNumber = String(nextNumber).padStart(3, '0');
+        newEmployeeId = `EMP${paddedNumber}`;
+      } else {
+        // If no number found, start from EMP001
+        newEmployeeId = 'EMP001';
+      }
+    } else {
+      // First employee
+      newEmployeeId = 'EMP001';
+    }
+
     const employee = await Employee.create({
-      employeeId,
+      employeeId: newEmployeeId,
       name,
       email,
       password,

@@ -48,7 +48,9 @@ function Employees({ user }) {
         delete updateData.email
         await employeeAPI.update(editingEmployee.id, updateData)
       } else {
-        await employeeAPI.create(formData)
+        const createData = { ...formData }
+        delete createData.employeeId  // Let backend auto-generate
+        await employeeAPI.create(createData)
       }
 
       setShowForm(false)
@@ -147,18 +149,12 @@ function Employees({ user }) {
           <div className="card" style={{ backgroundColor: '#f9fafb', marginBottom: '1rem' }}>
             <h3>{editingEmployee ? 'Edit Employee' : 'Add New Employee'}</h3>
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-2">
-                <div className="form-group">
-                  <label>Employee ID *</label>
-                  <input
-                    type="text"
-                    value={formData.employeeId}
-                    onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-                    required
-                    disabled={editingEmployee}
-                  />
+              {editingEmployee && (
+                <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#e0e7ff', borderRadius: '4px' }}>
+                  <strong>Employee ID:</strong> {formData.employeeId}
                 </div>
-
+              )}
+              <div className="grid grid-2">
                 <div className="form-group">
                   <label>Name *</label>
                   <input
