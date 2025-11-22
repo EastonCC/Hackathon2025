@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Employees from './pages/Employees'
@@ -9,9 +9,17 @@ import TaskStatuses from './pages/TaskStatuses'
 import Layout from './components/Layout'
 import { authAPI } from './services/api'
 
-function App() {
+function PrivateRoute({ children, user }) {
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+  return children
+}
+
+function AppContent() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -33,33 +41,44 @@ function App() {
   const handleLogin = (userData, token) => {
     localStorage.setItem('token', token)
     setUser(userData)
+    navigate('/')
   }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
     setUser(null)
+    navigate('/login')
   }
 
   if (loading) {
     return <div className="loading">Loading...</div>
   }
 
-  if (!user) {
-    return <Login onLogin={handleLogin} />
-  }
+  return (
+    <Routes>
+      <Route path="/login" element={
+        user ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />
+      } />
+      <Route path="/" element={
+        <PrivateRoute user={user}>
+          <Layout user={user} onLogout={handleLogout} />
+        </PrivateRoute>
+      }>
+        <Route index element={<Dashboard user={user} />} />
+        <Route path="employees" element={<Employees user={user} />} />
+        <Route path="tasks" element={<Tasks user={user} />} />
+        <Route path="groups" element={<Groups user={user} />} />
+        <Route path="task-statuses" element={<TaskStatuses user={user} />} />
+      </Route>
+      <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+    </Routes>
+  )
+}
 
+function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout user={user} onLogout={handleLogout} />}>
-          <Route index element={<Dashboard user={user} />} />
-          <Route path="employees" element={<Employees user={user} />} />
-          <Route path="tasks" element={<Tasks user={user} />} />
-          <Route path="groups" element={<Groups user={user} />} />
-          <Route path="task-statuses" element={<TaskStatuses user={user} />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Route>
-      </Routes>
+      <AppContent />
     </BrowserRouter>
   )
 }
