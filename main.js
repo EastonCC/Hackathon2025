@@ -89,14 +89,16 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
 
   // Load the frontend
-  const isPackaged = app.isPackaged;
+  // Always load from built files for desktop app
+  const distPath = path.join(__dirname, 'frontend/dist/index.html');
+  const fs = require('fs');
 
-  if (isPackaged) {
-    // In production, load the built files
-    mainWindow.loadFile(path.join(__dirname, 'frontend/dist/index.html'));
+  if (fs.existsSync(distPath)) {
+    console.log('Loading from built frontend:', distPath);
+    mainWindow.loadFile(distPath);
   } else {
-    // In development, use the dev server
-    mainWindow.loadURL('http://localhost:5173');
+    console.error('Frontend not built! Please run: cd frontend && npm run build');
+    mainWindow.loadURL('data:text/html,<h1>Error: Frontend not built</h1><p>Please run: cd frontend && npm run build</p>');
   }
 
   mainWindow.on('closed', () => {
