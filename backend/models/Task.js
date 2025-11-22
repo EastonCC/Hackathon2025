@@ -27,6 +27,18 @@ const Task = sequelize.define('Task', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  pendingApproval: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  completedById: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Employees',
+      key: 'id'
+    }
+  },
   assigneeType: {
     type: DataTypes.ENUM('employee', 'group'),
     allowNull: false

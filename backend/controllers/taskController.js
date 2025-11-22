@@ -75,7 +75,7 @@ const getAllTasks = async (req, res) => {
 const getMyTasks = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { statusId } = req.query;
+    const { statusId, directOnly } = req.query;
 
     const userGroups = await Group.findAll({
       include: [{
@@ -88,12 +88,23 @@ const getMyTasks = async (req, res) => {
 
     const groupIds = userGroups.map(g => g.id);
 
-    const where = {
-      [Op.or]: [
-        { assigneeType: 'employee', assigneeId: userId },
-        { assigneeType: 'group', assigneeId: { [Op.in]: groupIds } }
-      ]
-    };
+    let where;
+
+    // If directOnly is true, only show tasks assigned directly to the employee
+    if (directOnly === 'true') {
+      where = {
+        assigneeType: 'employee',
+        assigneeId: userId
+      };
+    } else {
+      // Show both direct tasks and group tasks
+      where = {
+        [Op.or]: [
+          { assigneeType: 'employee', assigneeId: userId },
+          { assigneeType: 'group', assigneeId: { [Op.in]: groupIds } }
+        ]
+      };
+    }
 
     if (statusId) {
       where.statusId = statusId;
@@ -287,6 +298,9 @@ const updateTask = async (req, res) => {
 
     const { title, description, priority, dueDate, assigneeType, assigneeId, statusId } = req.body;
 
+    // Check if user is admin
+    const isAdmin = req.user.groups?.some(group => group.isAdmin);
+
     const updates = {};
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
@@ -295,11 +309,26 @@ const updateTask = async (req, res) => {
     if (assigneeType !== undefined) updates.assigneeType = assigneeType;
     if (assigneeId !== undefined) updates.assigneeId = assigneeId;
     if (statusId !== undefined) {
-      updates.statusId = statusId;
-
       const newStatus = await TaskStatus.findByPk(statusId);
-      if (newStatus && newStatus.name === 'Complete' && !task.completedAt) {
-        updates.completedAt = new Date();
+
+      // If user is trying to mark task as complete
+      if (newStatus && newStatus.name === 'Complete') {
+        if (isAdmin) {
+          // Admins can directly complete tasks
+          updates.statusId = statusId;
+          updates.completedAt = new Date();
+          updates.completedById = req.user.id;
+          updates.pendingApproval = false;
+        } else {
+          // Non-admins request completion (pending approval)
+          updates.pendingApproval = true;
+          updates.completedById = req.user.id;
+          // Don't change status yet, keep current status
+        }
+      } else {
+        // For other status changes, just update normally
+        updates.statusId = statusId;
+        updates.pendingApproval = false;
       }
     }
 
@@ -350,6 +379,79 @@ const updateTask = async (req, res) => {
   }
 };
 
+const approveTaskCompletion = async (req, res) => {
+  try {
+    const task = await Task.findByPk(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    if (!task.pendingApproval) {
+      return res.status(400).json({ error: 'Task is not pending approval' });
+    }
+
+    // Find the Complete status
+    const completeStatus = await TaskStatus.findOne({
+      where: { name: 'Complete' }
+    });
+
+    if (!completeStatus) {
+      return res.status(400).json({ error: 'Complete status not found' });
+    }
+
+    // Approve the task completion
+    await task.update({
+      statusId: completeStatus.id,
+      completedAt: new Date(),
+      pendingApproval: false
+    });
+
+    const updatedTask = await Task.findByPk(task.id, {
+      include: [
+        {
+          model: TaskStatus,
+          as: 'status'
+        },
+        {
+          model: Employee,
+          as: 'createdBy',
+          attributes: ['id', 'employeeId', 'name', 'email']
+        }
+      ]
+    });
+
+    const taskData = updatedTask.toJSON();
+    const assignee = await updatedTask.getAssignee();
+
+    if (assignee) {
+      if (updatedTask.assigneeType === 'employee') {
+        taskData.assignee = {
+          type: 'employee',
+          id: assignee.id,
+          employeeId: assignee.employeeId,
+          name: assignee.name,
+          email: assignee.email
+        };
+      } else {
+        taskData.assignee = {
+          type: 'group',
+          id: assignee.id,
+          name: assignee.name,
+          description: assignee.description
+        };
+      }
+    }
+
+    res.json({
+      message: 'Task completion approved',
+      task: taskData
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const deleteTask = async (req, res) => {
   try {
     const task = await Task.findByPk(req.params.id);
@@ -372,5 +474,6 @@ module.exports = {
   getTaskById,
   createTask,
   updateTask,
+  approveTaskCompletion,
   deleteTask
 };

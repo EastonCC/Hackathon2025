@@ -11,6 +11,7 @@ function Tasks({ user }) {
   const [editingTask, setEditingTask] = useState(null)
   const [filterStatus, setFilterStatus] = useState('')
   const [showMyTasks, setShowMyTasks] = useState(false)
+  const [directTasksOnly, setDirectTasksOnly] = useState(false)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -24,7 +25,7 @@ function Tasks({ user }) {
 
   useEffect(() => {
     loadData()
-  }, [showMyTasks, filterStatus])
+  }, [showMyTasks, filterStatus, directTasksOnly])
 
   const loadData = async () => {
     try {
@@ -39,6 +40,10 @@ function Tasks({ user }) {
       setGroups(groupsRes.data.groups)
 
       const params = filterStatus ? { statusId: filterStatus } : {}
+      if (directTasksOnly) {
+        params.directOnly = 'true'
+      }
+
       const tasksRes = showMyTasks
         ? await taskAPI.getMyTasks(params)
         : await taskAPI.getAll(params)
@@ -92,6 +97,17 @@ function Tasks({ user }) {
       loadData()
     } catch (error) {
       alert(error.response?.data?.error || 'Error deleting task')
+    }
+  }
+
+  const handleApprove = async (id) => {
+    if (!confirm('Approve this task completion?')) return
+
+    try {
+      await taskAPI.approve(id)
+      loadData()
+    } catch (error) {
+      alert(error.response?.data?.error || 'Error approving task')
     }
   }
 
@@ -159,6 +175,18 @@ function Tasks({ user }) {
               Show only my tasks
             </label>
           </div>
+          {showMyTasks && (
+            <div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  checked={directTasksOnly}
+                  onChange={(e) => setDirectTasksOnly(e.target.checked)}
+                />
+                Show only tasks assigned directly to me
+              </label>
+            </div>
+          )}
         </div>
 
         {showForm && (
@@ -317,9 +345,16 @@ function Tasks({ user }) {
                     </span>
                   </td>
                   <td>
-                    <span className={`badge badge-${task.status.name.toLowerCase().replace('-', '-')}`}>
-                      {task.status.name}
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <span className={`badge badge-${task.status.name.toLowerCase().replace('-', '-')}`}>
+                        {task.status.name}
+                      </span>
+                      {task.pendingApproval && (
+                        <span className="badge" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+                          Pending Approval
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}</td>
                   <td>
@@ -327,6 +362,11 @@ function Tasks({ user }) {
                       <button onClick={() => handleEdit(task)} className="btn btn-secondary">
                         Edit
                       </button>
+                      {isAdmin && task.pendingApproval && (
+                        <button onClick={() => handleApprove(task.id)} className="btn btn-success">
+                          Approve
+                        </button>
+                      )}
                       {isAdmin && (
                         <button onClick={() => handleDelete(task.id)} className="btn btn-danger">
                           Delete

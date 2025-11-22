@@ -47,6 +47,7 @@ export const taskAPI = {
   getById: (id) => api.get(`/tasks/${id}`),
   create: (data) => api.post('/tasks', data),
   update: (id, data) => api.put(`/tasks/${id}`, data),
+  approve: (id) => api.post(`/tasks/${id}/approve`),
   delete: (id) => api.delete(`/tasks/${id}`)
 };
 
