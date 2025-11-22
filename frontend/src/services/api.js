@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// Use full URL for Electron (file:// protocol) or environment variable, otherwise use relative path for web
+const API_URL = import.meta.env.VITE_API_URL ||
+  (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
 
 const api = axios.create({
   baseURL: API_URL,
