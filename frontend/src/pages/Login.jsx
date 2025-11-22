@@ -27,7 +27,7 @@ function Login({ onLogin }) {
       <div className="login-card">
         <h2>Valdosta Medicine</h2>
         <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#6b7280' }}>
-          Employee Management System
+          Task Management System
         </h3>
 
         {error && <div className="error">{error}</div>}
@@ -40,7 +40,7 @@ function Login({ onLogin }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="your.email@valdostamedicine.com"
+              placeholder="your.email@clinicops.com"
             />
           </div>
 
@@ -65,15 +65,15 @@ function Login({ onLogin }) {
           </button>
         </form>
 
-        <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '4px' }}>
+        {/* <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '4px' }}>
           <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
             <strong>Demo Credentials:</strong>
           </p>
           <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-            Admin: admin@valdostamedicine.com / admin123<br />
-            Staff: sarah.johnson@valdostamedicine.com / password123
+            Admin: admin@clinicops.com / admin123<br />
+            Staff: sarah.johnson@clinicops.com / password123
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   )
