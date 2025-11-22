@@ -129,6 +129,9 @@ function createWindow() {
   });
 }
 
+// Disable hardware acceleration to prevent GPU errors on some systems
+app.disableHardwareAcceleration();
+
 app.whenReady().then(async () => {
   try {
     await startBackend();
