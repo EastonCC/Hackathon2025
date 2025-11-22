@@ -18,8 +18,8 @@ const seedDatabase = async () => {
   const adminUser = await Employee.create({
     employeeId: 'EMP001',
     name: 'Admin User',
-    email: 'admin@valdostamedicine.com',
-    password: 'admin123',
+    email: 'admin@clinicops.test',
+    password: 'admintest123!!',
     address: '123 Main St, Valdosta, GA',
     salary: 75000.00,
     dateOfHire: '2020-01-15',
@@ -28,17 +28,17 @@ const seedDatabase = async () => {
     role: 'System Administrator'
   });
 
-  const doctor = await Employee.create({
+  const regularUser = await Employee.create({
     employeeId: 'EMP002',
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@valdostamedicine.com',
-    password: 'password123',
+    name: 'Regular User',
+    email: 'user@clinicops.test',
+    password: 'usertest123!!',
     address: '456 Oak Ave, Valdosta, GA',
-    salary: 120000.00,
-    dateOfHire: '2019-03-10',
-    dateOfBirth: '1982-11-15',
+    salary: 65000.00,
+    dateOfHire: '2021-03-10',
+    dateOfBirth: '1990-11-15',
     department: 'Medical',
-    role: 'Physician'
+    role: 'Staff Member'
   });
 
   const nurse = await Employee.create({
@@ -61,7 +61,7 @@ const seedDatabase = async () => {
   });
 
   await EmployeeGroup.create({
-    EmployeeId: doctor.id,
+    EmployeeId: regularUser.id,
     GroupId: staffGroup.id
   });
 
@@ -100,7 +100,7 @@ const seedDatabase = async () => {
     priority: 'High',
     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     assigneeType: 'employee',
-    assigneeId: doctor.id,
+    assigneeId: regularUser.id,
     statusId: openStatus.id,
     createdById: adminUser.id
   });
