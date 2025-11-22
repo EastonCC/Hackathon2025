@@ -2,6 +2,20 @@
 
 A comprehensive employee management and task assignment system built for Valdosta Medicine clinic.
 
+## 🎯 Choose Your Version
+
+This application is available in two formats:
+
+1. **🖥️ Desktop App** (Standalone executable - recommended for single-computer use)
+   - No installation hassle - just run one file
+   - Works completely offline
+   - See [DESKTOP_APP.md](DESKTOP_APP.md) for instructions
+
+2. **🌐 Web App** (Browser-based - for multi-user/cloud deployment)
+   - Access from anywhere
+   - Multiple users simultaneously
+   - See [QUICKSTART.md](QUICKSTART.md) or [DEPLOYMENT.md](DEPLOYMENT.md)
+
 ## Features
 
 ### Core Features (Implemented)

@@ -18,6 +18,15 @@ dist/
 build/
 *.log
 
+# Electron build output
+out/
+release/
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.rpm
+
 # IDE
 .vscode/
 .idea/
